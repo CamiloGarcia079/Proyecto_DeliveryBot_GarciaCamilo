@@ -508,7 +508,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://api.telegram.org/bot8605050495:AAGCOtWLZaer78rSFQ90yYFaiD5VzxwDoY0/sendMessage",
+        "url": "https://api.telegram.org/botTU_TOKEN_DE_TELEGRAM/sendMessage",
         "sendBody": true,
         "specifyBody": "keypair",
         "bodyParameters": {

@@ -1,12 +1,12 @@
-# 🤖 DeliveryBot — Bot de Pedidos para Cafetería en Telegram
+# DeliveryBot — Bot de Pedidos para Cafetería en Telegram
 
-> **Proyecto académico** | Ingeniería de Sistemas | CampusLands  
-> **Estudiante:** Camilo García  
+> **Proyecto académico** | Técnico en Desarrollo de Software e Inteligencia Artificial | CampusLands  
+> **Autor:** Camilo Andrés García Almeida  
 > **Herramientas:** n8n · Telegram Bot API · Google Sheets · ngrok
 
 ---
 
-## 📋 Descripción
+## Descripción
 
 **DeliveryBot** es un bot de Telegram que automatiza el proceso de pedidos de una cafetería universitaria. Permite a los clientes consultar el menú, agregar productos al carrito, visualizar su pedido y confirmarlo, todo desde Telegram sin intervención humana.
 
@@ -14,7 +14,7 @@ El sistema utiliza **n8n** como motor de automatización, **Google Sheets** como
 
 ---
 
-## 🛠️ Stack Tecnológico
+## Stack Tecnológico
 
 | Tecnología | Uso |
 |---|---|
@@ -26,7 +26,7 @@ El sistema utiliza **n8n** como motor de automatización, **Google Sheets** como
 
 ---
 
-## ⚙️ Arquitectura del Sistema
+## Arquitectura del Sistema
 
 ```
 Usuario Telegram
@@ -49,7 +49,7 @@ https://clubbing-stillness-register.ngrok-free.dev
 
 ---
 
-## 🚀 Instalación y Configuración
+## Instalación y Configuración
 
 ### 1. Iniciar ngrok
 
@@ -76,7 +76,7 @@ Clic en **Publish** en n8n.
 
 ---
 
-## 🖥️ Capturas del Sistema
+## Capturas del Sistema
 
 ### 1. Infraestructura
 
@@ -182,7 +182,7 @@ Clic en **Publish** en n8n.
 
 ---
 
-## 📊 Estructura de Google Sheets
+## Estructura de Google Sheets
 
 ### Hoja MENU
 | id_producto | nombre | descripcion | precio | categoria | stock |
@@ -203,25 +203,25 @@ Clic en **Publish** en n8n.
 
 ---
 
-## 📱 Funcionalidades
+## Funcionalidades
 
-| Funcionalidad | Estado |
+| Funcionalidad | Implementada |
 |---|---|
-| Bienvenida personalizada | ✅ |
-| Menú por categorías | ✅ |
-| Productos numerados con botones | ✅ |
-| Agregar al carrito | ✅ |
-| Ver carrito con total | ✅ |
-| Confirmar pedido | ✅ |
-| Guardar pedido en Sheets | ✅ |
-| Historial de pedidos | ✅ |
-| Vaciar carrito | ✅ |
-| Centro de ayuda | ✅ |
-| Promociones del día | ✅ |
+| Bienvenida personalizada | Sí |
+| Menú por categorías | Sí |
+| Productos numerados con botones | Sí |
+| Agregar al carrito | Sí |
+| Ver carrito con total | Sí |
+| Confirmar pedido | Sí |
+| Guardar pedido en Sheets | Sí |
+| Historial de pedidos | Sí |
+| Vaciar carrito | Sí |
+| Centro de ayuda | Sí |
+| Promociones del día | Sí |
 
 ---
 
-## 📁 Archivos del Repositorio
+## Archivos del Repositorio
 
 ```
 DeliveryBot-CampusLands/
@@ -253,8 +253,7 @@ DeliveryBot-CampusLands/
 
 ---
 
-## 👨‍💻 Autor
+## Autor
 
 **Camilo García**  
-Estudiante de Ingeniería de Sistemas  
-CampusLands — 2026
+Técnico en Desarrollo de Software e Inteligencia Artificial (CampusLands)

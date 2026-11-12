@@ -1,78 +1,65 @@
-# 🤖 DeliveryBot — Bot de pedidos para cafetería
- 
-Bot de Telegram que permite hacer pedidos en una cafetería de forma conversacional, construido con **n8n** y **Google Sheets** como backend en tiempo real. El usuario abre el chat, navega el menú por categorías, arma su carrito y confirma el pedido, todo sin salir de Telegram.
- 
----
- 
-## ¿Qué hace?
- 
-DeliveryBot atiende a los clientes paso a paso:
- 
-- Da la bienvenida y muestra las **categorías** del menú.
-- Lista los **productos** de cada categoría con su precio.
-- Permite **agregar productos al carrito** y revisarlo en cualquier momento.
-- Registra cada **pedido** en una hoja de cálculo para que el negocio lo gestione.
-- Controla el **horario de atención**: fuera de horario, avisa que está cerrado en vez de tomar pedidos.
-Toda la información (menú, sesiones de cada usuario y pedidos) vive en Google Sheets, así que el negocio puede actualizar el menú sin tocar el código.
- 
----
- 
-## 🛠️ Tecnologías
- 
-| Herramienta | Para qué se usa |
-|-------------|-----------------|
-| **n8n** | Orquestación de todo el flujo conversacional (el "cerebro" del bot) |
-| **Telegram Bot API** | Canal de chat con el usuario |
-| **Google Sheets** | Base de datos: menú, sesiones y pedidos |
-| **ngrok** | Exponer el webhook local de n8n a internet para que Telegram lo alcance |
- 
----
- 
-## ¿Cómo funciona por dentro?
- 
-El flujo está organizado así:
- 
-1. **Webhook de Telegram** → recibe cada mensaje del usuario.
-2. **Router principal** → decide qué hacer según lo que escribió (ver menú, agregar al carrito, confirmar, etc.).
-3. **Switch de acciones** → ramifica entre las distintas opciones del bot.
-4. **Lectura/escritura en Google Sheets** → consulta el menú, guarda la sesión del usuario y registra el pedido.
-5. **Respuesta al usuario** → envía de vuelta los productos, el carrito o la confirmación.
-Las hojas de Google Sheets están divididas en tres pestañas:
- 
-- **MENU** → catálogo de productos (categoría, nombre, precio).
-- **SESSIONS** → estado actual de cada usuario (qué tiene en el carrito).
-- **PEDIDOS** → historial de pedidos confirmados.
----
- 
-## 📸 Evidencias
- 
-En la carpeta [`capturas/`](./capturas) está toda la documentación visual del proyecto: el workflow completo en n8n, la configuración de cada nodo, las tres hojas de Google Sheets y el bot funcionando en Telegram (bienvenida, categorías, carrito, promociones, etc.).
- 
-El workflow exportado está disponible en [`capturas/DeliveryBot_v2_DEFINITIVO.json`](./capturas/DeliveryBot_v2_DEFINITIVO.json) para importarlo directamente en n8n.
- 
----
- 
-## 🚀 Cómo ponerlo a correr
- 
-1. Importar el archivo `DeliveryBot_v2_DEFINITIVO.json` en una instancia de n8n.
-2. Crear un bot en Telegram con [@BotFather](https://t.me/BotFather) y configurar el token en las credenciales de n8n.
-3. Conectar una cuenta de Google y crear una hoja con las pestañas **MENU**, **SESSIONS** y **PEDIDOS**.
-4. Levantar n8n con la variable `WEBHOOK_URL` apuntando a la URL pública de ngrok.
-5. Iniciar ngrok sobre el puerto de n8n para exponer el webhook.
-> 💡 **Nota:** las credenciales (token de Telegram, IDs de Google) deben configurarse de forma privada en n8n, nunca dentro del repositorio.
- 
----
- 
-## 📚 Lo que aprendí
- 
-- En Google Sheets, actualizar filas con `appendOrUpdate` usando el `telegram_id` falla por diferencias de tipo (número vs texto); el patrón confiable es **borrar y volver a insertar**.
-- n8n debe arrancar con `WEBHOOK_URL` ya configurado, o Telegram no encuentra el webhook.
-- En una instalación nueva de n8n conviene borrar la carpeta `~/.n8n` antes del primer arranque para evitar configuraciones viejas.
-- Logré desplegar el bot tanto en **Windows** como en **Linux sin permisos de administrador**.
----
- 
-## 👤 Autor
- 
-**Camilo Andrés García Almeida**
-Estudiante de Desarrollo de Software — Campuslands
-[GitHub](https://github.com/CamiloGarcia079) · [LinkedIn](https://www.linkedin.com/in/camilo-garcia-7570693b7/)
+# DeliveryBot
+
+Bot de Telegram para hacer pedidos en una cafetería. Todo el flujo está construido en n8n y usa Google Sheets como base de datos, así que el negocio puede cambiar el menú y ver los pedidos desde una hoja de cálculo, sin tocar código.
+
+## Qué problema resuelve
+
+En una cafetería pequeña los pedidos por chat se toman a mano: alguien responde, anota, suma y avisa a cocina. El bot hace ese trabajo: muestra el menú, arma el carrito, calcula el total, guarda el pedido y le avisa a cocina y al cliente cuando el pedido cambia de estado.
+
+## Qué hace
+
+- Responde a `/start` o a un saludo con el menú principal.
+- Muestra las categorías y los productos con su precio, con botones en línea.
+- Agrega productos al carrito, permite verlo y vaciarlo.
+- Al confirmar, calcula el total con los precios de la hoja, genera un número de pedido (`PED-fecha-número`) y lo guarda.
+- Notifica a cocina, y cada cambio de estado (en preparación, en camino, entregado) se actualiza en la hoja y se le avisa al cliente.
+- El cliente puede consultar sus pedidos anteriores, la ayuda y las promociones.
+
+## Tecnologías
+
+- **n8n** para todo el flujo: 39 nodos, entre ellos 15 de Google Sheets, 12 de Telegram y 8 nodos de código.
+- **JavaScript** dentro de los nodos de código: el enrutador de acciones, el cálculo del total y el formato de los mensajes.
+- **Telegram Bot API** como canal con el usuario.
+- **Google Sheets** con tres pestañas: `MENU`, `SESSIONS` (carrito de cada usuario) y `PEDIDOS`.
+- **ngrok** para exponer el webhook de n8n a internet mientras corre en local.
+
+## Cómo funciona
+
+```text
+Telegram -> Telegram Trigger -> Router Principal (Code) -> Switch de acciones
+                                                              |
+        menú, categorías, productos, carrito, confirmar, estado, mis pedidos, ayuda
+                                                              |
+                                     Google Sheets (leer / guardar)  ->  respuesta por Telegram
+```
+
+El nodo `Router Principal` lee el mensaje o el botón que tocó el usuario y lo convierte en una acción (`categorias`, `agregar_carrito`, `confirmar`, etc.). El `Switch` manda cada acción a su rama.
+
+## Cómo ejecutarlo
+
+1. Importa `capturas/DeliveryBot_v2_DEFINITIVO.json` en n8n.
+2. Crea un bot con @BotFather y configura el token en las credenciales de Telegram de n8n.
+3. En el nodo `Enviar Productos` (petición HTTP) reemplaza `TU_TOKEN_DE_TELEGRAM` en la URL por el token del bot.
+4. Conecta tu cuenta de Google y crea una hoja con las pestañas `MENU`, `SESSIONS` y `PEDIDOS`.
+5. Arranca ngrok sobre el puerto de n8n y levanta n8n con `WEBHOOK_URL` apuntando a la URL pública de ngrok.
+
+## Estructura
+
+```text
+capturas/
+├── DeliveryBot_v2_DEFINITIVO.json   el workflow exportado de n8n
+├── README.md                         explicación de cada captura
+└── capturas/                         21 capturas: workflow, nodos, hojas y el bot funcionando
+```
+
+## Decisiones y lo que aprendí
+
+- **Borrar y volver a insertar la sesión.** Actualizar la fila del usuario con `appendOrUpdate` usando el `telegram_id` fallaba porque Sheets a veces lo trataba como número y a veces como texto. Lo resolví borrando la sesión anterior e insertando la nueva.
+- **Un solo enrutador en código.** En lugar de muchos nodos `IF`, un nodo de código decide la acción y un `Switch` la reparte. Así agregar una opción nueva es agregar una línea y una rama.
+- **El total se calcula con los precios de la hoja,** no con lo que guarda el carrito, para que un cambio de precio en el menú se refleje.
+- n8n tiene que arrancar con `WEBHOOK_URL` ya configurado, o Telegram no encuentra el webhook.
+- Lo dejé funcionando en Windows y en Linux sin permisos de administrador.
+
+## Autor
+
+Camilo Andrés García Almeida · [GitHub](https://github.com/CamiloGarcia079) · [LinkedIn](https://www.linkedin.com/in/camilo-garcia-7570693b7/)
